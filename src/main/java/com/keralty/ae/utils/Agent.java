@@ -412,11 +412,19 @@ public class Agent implements UserCrudService {
     }
 
     private Funcionario findFuncionarioByUserName(String userName) {
-        return funcionarioService.getById(Long.valueOf(userName));
+        try {
+            return funcionarioService.getById(Long.valueOf(userName));
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private UsuarioSistemaExterno findUsuarioSistemaExternoByUserName(String userName) {
-        return usuarioSistemaExternoService.getById(userName);
+        try {
+            return usuarioSistemaExternoService.getById(userName);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private Funcionario findAgentAsFuncionario(String userName) {

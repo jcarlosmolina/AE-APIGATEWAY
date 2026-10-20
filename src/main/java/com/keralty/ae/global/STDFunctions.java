@@ -1980,7 +1980,11 @@ public final class STDFunctions {
 			if (i != -1) {
 				lValue = lValue.substring(0, i);
 			}
-			returnValue = Long.valueOf(lValue);
+			try {
+			    returnValue = Long.valueOf(lValue);
+			} catch (Exception e) {
+			    returnValue = null;
+			}
 		}
 		return returnValue;
 	}
@@ -1996,7 +2000,11 @@ public final class STDFunctions {
 		if (value == null) {
 			returnValue = null;
 		} else {
-			returnValue = Double.valueOf(value);
+		    try {
+			    returnValue = Double.valueOf(value);
+			} catch (Exception e) {
+			    returnValue = null;
+			}
 		}
 		return returnValue;
 	}

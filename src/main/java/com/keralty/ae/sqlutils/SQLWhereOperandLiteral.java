@@ -19,7 +19,11 @@ public class SQLWhereOperandLiteral extends SQLWhereOperand {
     public SQLWhereOperandLiteral(Object literal, String dataType) {
         super(dataType);
         if (dataType.equalsIgnoreCase(Constants.Type.REAL.getTypeName()))
-            this.literal = Double.valueOf(literal.toString());
+			try {
+                this.literal = Double.valueOf(literal.toString());
+			} catch (Exception e) {
+				this.liseral = null;
+			}
         else
             this.literal = literal;
     }
