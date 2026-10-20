@@ -193,6 +193,7 @@ public class SeccionP extends AbstractAppEntity {
         return 0;
     }
 
+    @Override
     @JsonIgnore
     public boolean isNull() {
         return false;

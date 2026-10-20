@@ -163,6 +163,7 @@ public class ParamReporte extends AbstractAppEntity {
         return 0;
     }
 
+    @Override
     @JsonIgnore
     public boolean isNull() {
         return false;

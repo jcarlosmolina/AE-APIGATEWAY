@@ -1050,6 +1050,7 @@ public class Usuario extends AbstractAppEntity {
         return 0;
     }
 
+    @Override
     @JsonIgnore
     public boolean isNull() {
         return false;
