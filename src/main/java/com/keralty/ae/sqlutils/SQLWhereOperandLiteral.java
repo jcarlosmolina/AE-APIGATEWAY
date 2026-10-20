@@ -22,7 +22,7 @@ public class SQLWhereOperandLiteral extends SQLWhereOperand {
 			try {
                 this.literal = Double.valueOf(literal.toString());
 			} catch (Exception e) {
-				this.liseral = null;
+				this.literal = null;
 			}
         else
             this.literal = literal;
