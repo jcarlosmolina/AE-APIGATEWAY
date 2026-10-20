@@ -128,7 +128,7 @@ public class Agent implements UserCrudService {
      */
     public IEntity getAgentInstance() {
     	setClassName(getAgentRoles().get(0));
-        IEntity lAgent;
+        IEntity lAgent = null;
         if (Constants.FUNCIONARIO.equalsIgnoreCase(className)) {
             try {
                 lAgent = funcionarioService.getByOID(new FuncionarioOid(Long.valueOf(getAgentName())));
