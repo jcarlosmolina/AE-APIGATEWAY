@@ -1,0 +1,130 @@
+package com.keralty.ae.viewmodel.funcionario.ds;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+public class DSAgentePIU {
+
+    @JsonProperty("usuario")
+    private String dSAgentePIUUsuario;
+
+    @JsonProperty("rol_nombre")
+    private String dSAgentePIURolDotNombre;
+
+    @JsonProperty("primernombre")
+    private String dSAgentePIUPrimerNombre;
+
+    @JsonProperty("segundonombre")
+    private String dSAgentePIUSegundoNombre;
+
+    @JsonProperty("primerapellido")
+    private String dSAgentePIUPrimerApellido;
+
+    @JsonProperty("segundoapellido")
+    private String dSAgentePIUSegundoApellido;
+
+    @JsonProperty("disponible")
+    private Boolean dSAgentePIUDisponible;
+
+    @JsonProperty("usuarioldap")
+    private String dSAgentePIUUsuarioLDAP;
+
+    @JsonProperty("email")
+    private String dSAgentePIUEmail;
+
+    @JsonProperty("sucursal_descripcion")
+    private String dSAgentePIUSucursalDotDescripcion;
+
+    public DSAgentePIU() {
+    
+    }
+
+    @JsonIgnore
+    public String getDSAgentePIUUsuario() {
+        return this.dSAgentePIUUsuario;
+    }
+    
+    public void setDSAgentePIUUsuario(String dSAgentePIUUsuario) {
+        this.dSAgentePIUUsuario = dSAgentePIUUsuario;
+    }
+
+    @JsonIgnore
+    public String getDSAgentePIURolDotNombre() {
+        return this.dSAgentePIURolDotNombre;
+    }
+    
+    public void setDSAgentePIURolDotNombre(String dSAgentePIURolDotNombre) {
+        this.dSAgentePIURolDotNombre = dSAgentePIURolDotNombre;
+    }
+
+    @JsonIgnore
+    public String getDSAgentePIUPrimerNombre() {
+        return this.dSAgentePIUPrimerNombre;
+    }
+    
+    public void setDSAgentePIUPrimerNombre(String dSAgentePIUPrimerNombre) {
+        this.dSAgentePIUPrimerNombre = dSAgentePIUPrimerNombre;
+    }
+
+    @JsonIgnore
+    public String getDSAgentePIUSegundoNombre() {
+        return this.dSAgentePIUSegundoNombre;
+    }
+    
+    public void setDSAgentePIUSegundoNombre(String dSAgentePIUSegundoNombre) {
+        this.dSAgentePIUSegundoNombre = dSAgentePIUSegundoNombre;
+    }
+
+    @JsonIgnore
+    public String getDSAgentePIUPrimerApellido() {
+        return this.dSAgentePIUPrimerApellido;
+    }
+    
+    public void setDSAgentePIUPrimerApellido(String dSAgentePIUPrimerApellido) {
+        this.dSAgentePIUPrimerApellido = dSAgentePIUPrimerApellido;
+    }
+
+    @JsonIgnore
+    public String getDSAgentePIUSegundoApellido() {
+        return this.dSAgentePIUSegundoApellido;
+    }
+    
+    public void setDSAgentePIUSegundoApellido(String dSAgentePIUSegundoApellido) {
+        this.dSAgentePIUSegundoApellido = dSAgentePIUSegundoApellido;
+    }
+
+    @JsonIgnore
+    public Boolean getDSAgentePIUDisponible() {
+        return this.dSAgentePIUDisponible;
+    }
+    
+    public void setDSAgentePIUDisponible(Boolean dSAgentePIUDisponible) {
+        this.dSAgentePIUDisponible = dSAgentePIUDisponible;
+    }
+
+    @JsonIgnore
+    public String getDSAgentePIUUsuarioLDAP() {
+        return this.dSAgentePIUUsuarioLDAP;
+    }
+    
+    public void setDSAgentePIUUsuarioLDAP(String dSAgentePIUUsuarioLDAP) {
+        this.dSAgentePIUUsuarioLDAP = dSAgentePIUUsuarioLDAP;
+    }
+
+    @JsonIgnore
+    public String getDSAgentePIUEmail() {
+        return this.dSAgentePIUEmail;
+    }
+    
+    public void setDSAgentePIUEmail(String dSAgentePIUEmail) {
+        this.dSAgentePIUEmail = dSAgentePIUEmail;
+    }
+
+    @JsonIgnore
+    public String getDSAgentePIUSucursalDotDescripcion() {
+        return this.dSAgentePIUSucursalDotDescripcion;
+    }
+    
+    public void setDSAgentePIUSucursalDotDescripcion(String dSAgentePIUSucursalDotDescripcion) {
+        this.dSAgentePIUSucursalDotDescripcion = dSAgentePIUSucursalDotDescripcion;
+    }
+}
