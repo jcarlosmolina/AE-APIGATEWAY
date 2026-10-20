@@ -51,7 +51,7 @@ public class AgentexProductoOid implements IOid {
     public AgentexProductoOid(List<Object> col) {
         try {
             this.funcionarioAsesorId = Long.parseLong(col.get(0).toString());
-        catch (Exception e) {
+        } catch (Exception e) {
             this.funcionarioAsesorId = null;
         }
         this.agentexProductoId = (Long) col.get(1);

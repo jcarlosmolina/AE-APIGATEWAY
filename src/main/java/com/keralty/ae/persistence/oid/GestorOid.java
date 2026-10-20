@@ -39,7 +39,7 @@ public class GestorOid implements IOid {
     public GestorOid(List<Object> col) {
         try {
             this.funcionarioId = Long.parseLong(col.get(0).toString());
-        catch (Exception e) {
+        } catch (Exception e) {
             this.funcionarioId = null;
         }
     }
