@@ -3,6 +3,7 @@ package com.keralty.ae.api.errorws;
 import com.keralty.ae.persistence.ErrorWS;
 import com.keralty.ae.persistence.oid.ErrorWSOid;
 import com.keralty.ae.service.ErrorWSService;
+import com.keralty.ae.service.MsEstatusProxy;
 import com.keralty.ae.utils.TokenUtilities;
 import com.keralty.ae.viewmodel.errorws.siu.CrearRequest;
 import com.keralty.ae.viewmodel.errorws.siu.EliminarRequest;
@@ -26,6 +27,9 @@ public class ErrorWSApi {
 
     @RestClient
     ErrorWSService service;
+
+    @RestClient
+    MsEstatusProxy serviceMsEstatus;
 
     JsonWebToken jwt; 
 
@@ -77,6 +81,10 @@ public class ErrorWSApi {
     @Path(value = "/GetPopulationDynamic")
     @RolesAllowed({"Funcionario","Admin","SuperAdmin","Asesor","AreaMedica","Afiliaciones","RespRegional","Gestor","MesaDeApoyo"})
     public PopulationResponseViewModel getErrorWSPopulationDynamic(QueryRequest request) {
+    	if ("msestatus".equalsIgnoreCase(request.getPiuName()) ||
+        		"piu_errorws".equalsIgnoreCase(request.getPiuName()) ) {
+        		return serviceMsEstatus.getErrorWSPopulationDynamic(request);
+        	}
         return (PopulationResponseViewModel) service.getPopulationDynamic(request);
     }
 

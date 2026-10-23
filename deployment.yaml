@@ -24,7 +24,7 @@ spec:
       containers:
         - name: ae-apigateway
 # Replace the placeholder below with the name of your OpenShift namespace/project
-          image: 'image-registry.openshift-image-registry.svc:5000/${YourNamespaceOrProjectNameHere}/ae-apigateway:latest'
+          image: 'image-registry.openshift-image-registry.svc:5000/soporte-colsanitas-dev/ae-apigateway:latest'
           ports:
             - containerPort: 8080
               protocol: TCP
@@ -92,11 +92,196 @@ spec:
               configMapKeyRef:
                 name: ae-config
                 key: ae-generasolicitud-url
+          - name: quarkus.rest-client.ae-estatus.url
+            valueFrom:
+              configMapKeyRef:
+                name: ae-config
+                key: ae-estatus-url
+          - name: quarkus.rest-client.ae-enviodoc.url
+            valueFrom:
+              configMapKeyRef:
+                name: ae-config
+                key: ae-enviodoc-url
+          - name: quarkus.rest-client.ae-reportsgenerator.url
+            valueFrom:
+              configMapKeyRef:
+                name: ae-config
+                key: ae-reportsgenerator-url
+# Configuracion general de integraciones con servicios de BH
+          - name: com.keralty.integraciones.maxintentosllamada
+            valueFrom:
+              configMapKeyRef:
+                name: ae-config
+                key: integraciones-maxintentosllamada
+          - name: com.keralty.integraciones.codaplicacion
+            valueFrom:
+              configMapKeyRef:
+                name: ae-config
+                key: integraciones-codaplicacion
+          - name: com.keralty.integraciones.funcionnegocio
+            valueFrom:
+              configMapKeyRef:
+                name: ae-config
+                key: integraciones-funcionnegocio
+# Configuracion servicios de BH
+          - name: quarkus.rest-client.integraciones_token.url
+            valueFrom:
+              configMapKeyRef:
+                name: ae-config
+                key: integraciones_token-url
+          - name: com.keralty.integraciones.token.hash
+            valueFrom:
+              secretKeyRef:
+                name: ae-secret
+                key: integraciones-token-hash
+          - name: com.keralty.integraciones.token.usr
+            valueFrom:
+              secretKeyRef:
+                name: ae-secret
+                key: integraciones-token-usr
+          - name: com.keralty.integraciones.token.pwd
+            valueFrom:
+              secretKeyRef:
+                name: ae-secret
+                key: integraciones-token-pwd
+          - name: quarkus.rest-client.integraciones_contract.url
+            valueFrom:
+              configMapKeyRef:
+                name: ae-config
+                key: integraciones_contract-url
+          - name: quarkus.rest-client.integraciones_patient.url
+            valueFrom:
+              configMapKeyRef:
+                name: ae-config
+                key: integraciones_patient-url
+          - name: quarkus.rest-client.integraciones_coverage.url
+            valueFrom:
+              configMapKeyRef:
+                name: ae-config
+                key: integraciones_coverage-url
+          - name: quarkus.rest-client.integraciones_organization.url
+            valueFrom:
+              configMapKeyRef:
+                name: ae-config
+                key: integraciones_organization-url
+          - name: quarkus.rest-client.integraciones_emailnotifications.url
+            valueFrom:
+              configMapKeyRef:
+                name: ae-config
+                key: integraciones_emailnotifications-url
+          - name: com.keralty.integraciones_emailnotifications.mailFrom
+            valueFrom:
+              configMapKeyRef:
+                name: ae-config
+                key: integraciones_emailnotifications-mailFrom
+          - name: com.keralty.integraciones_emailnotifications.mailcc
+            valueFrom:
+              configMapKeyRef:
+                name: ae-config
+                key: integraciones_emailnotifications-mailcc
+# binarysent
+          - name: quarkus.rest-client.integraciones_emailnotifications_binarysent.url
+            valueFrom:
+              configMapKeyRef:
+                name: ae-config
+                key: integraciones_emailnotifications_binarysent-url
+          - name: quarkus.rest-client.integraciones_emailnotifications_binarysent.mailfrom
+            valueFrom:
+              configMapKeyRef:
+                name: ae-config
+                key: integraciones_emailnotifications_binarysent-mailfrom
+          - name: quarkus.rest-client.integraciones_emailnotifications_binarysent.usr
+            valueFrom:
+              configMapKeyRef:
+                name: ae-config
+                key: integraciones_emailnotifications_binarysent-usr
+          - name: quarkus.rest-client.integraciones_emailnotifications_binarysent.pwd
+            valueFrom:
+              configMapKeyRef:
+                name: ae-config
+                key: integraciones_emailnotifications_binarysent-pwd
+          - name: quarkus.rest-client.integraciones_enviosms.url
+            valueFrom:
+              configMapKeyRef:
+                name: ae-config
+                key: integraciones_enviosms-url
+          - name: com.keralty.integraciones_enviosms.idusuario
+            valueFrom:
+              secretKeyRef:
+                name: ae-secret
+                key: integraciones_enviosms-idusuario
+          - name: com.keralty.integraciones_enviosms.pwd
+            valueFrom:
+              secretKeyRef:
+                name: ae-secret
+                key: integraciones_enviosms-pwd
+# Reactivacion de contratos
+          - name: com.keralty.integraciones.parametricas.productos.validosreactivacioncontratos
+            valueFrom:
+              configMapKeyRef:
+                name: ae-config
+                key: integraciones-parametricas-productos-validosreactivacioncontratos
+          - name: quarkus.rest-client.integraciones_tipossolicitud.url
+            valueFrom:
+              configMapKeyRef:
+                name: ae-config
+                key: integraciones_tipossolicitud-url
+          - name: quarkus.rest-client.integraciones_reactivacioncontratos.url
+            valueFrom:
+              configMapKeyRef:
+                name: ae-config
+                key: integraciones_reactivacioncontratos-url
+          - name: quarkus.rest-client.integraciones_beneficiario.url
+            valueFrom:
+              configMapKeyRef:
+                name: ae-config
+                key: integraciones_beneficiario-url
+# Configuracion Gestor ATOMIC
+          - name: quarkus.rest-client.integraciones_gestordocumental.url
+            valueFrom:
+              configMapKeyRef:
+                name: ae-config
+                key: integraciones_gestordocumental-url
+          - name: com.keralty.integraciones.tokenatomic.url
+            valueFrom:
+              configMapKeyRef:
+                name: ae-config
+                key: integraciones-tokenatomic-url
+          - name: com.keralty.integraciones.tokenatomic.usr
+            valueFrom:
+              secretKeyRef:
+                name: ae-secret
+                key: integraciones-tokenatomic-usr
+          - name: com.keralty.integraciones.tokenatomic.pwd
+            valueFrom:
+              secretKeyRef:
+                name: ae-secret
+                key: integraciones-tokenatomic-pwd
+          - name: com.keralty.integraciones.tokenatomic.clientid
+            valueFrom:
+              secretKeyRef:
+                name: ae-secret
+                key: integraciones-tokenatomic-clientid
+          - name: com.keralty.integraciones.tokenatomic.clientsecret
+            valueFrom:
+              secretKeyRef:
+                name: ae-secret
+                key: integraciones-tokenatomic-clientsecret
+          - name: com.keralty.integraciones.atomic.urldescarga
+            valueFrom:
+              configMapKeyRef:
+                name: ae-config
+                key: integraciones-atomic-urldescarga
+          - name: com.keralty.integraciones.atomic.repositoryidentifier
+            valueFrom:
+              configMapKeyRef:
+                name: ae-config
+                key: integraciones-atomic-repositoryidentifier
 # Set the values below according to your preferences to assign resources to this microservice
           resources:
             limits:
-              cpu: '1'
-              memory: 500Mi
+              cpu: 200m
+              memory: 250Mi
             requests:
               cpu: 10m
-              memory: 250Mi
+              memory: 100Mi

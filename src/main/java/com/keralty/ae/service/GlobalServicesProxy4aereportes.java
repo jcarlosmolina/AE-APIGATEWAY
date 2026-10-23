@@ -16,6 +16,9 @@ import jakarta.ws.rs.POST;
 import org.eclipse.microprofile.rest.client.annotation.ClientHeaderParam;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
+import jakarta.ws.rs.HeaderParam;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
+
 @Path("/api/GlobalServicesApi")
 @RegisterRestClient(configKey="ae-reportes")
 @ClientHeaderParam(name = "Authorization", value = "Bearer {com.keralty.ae.utils.TokenUtilities.getToken4aereportes}")
@@ -35,10 +38,18 @@ public interface GlobalServicesProxy4aereportes {
     @Path(value = "/OGETREPORTE")
     public OGETREPORTEResponse oGETREPORTE(OGETREPORTERequest request);
 
+    @POST
+    @Path(value = "/OGETREPORTE")
+    public OGETREPORTEResponse oGETREPORTE2(@HeaderParam("Authorization") String token, @RequestBody OGETREPORTERequest request);
+
 
     @POST
     @Path(value = "/OGETREPORTSOLNOV")
     public OGETREPORTSOLNOVResponse oGETREPORTSOLNOV(OGETREPORTSOLNOVRequest request);
+
+    @POST
+    @Path(value = "/OGETREPORTSOLNOV")
+    public OGETREPORTSOLNOVResponse oGETREPORTSOLNOV2(@HeaderParam("Authorization") String token, @RequestBody OGETREPORTSOLNOVRequest request);
 
 
     @POST

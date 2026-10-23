@@ -12,6 +12,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.POST;
 import java.util.List;
+import java.util.concurrent.CompletionStage;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.rest.client.annotation.ClientHeaderParam;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
@@ -160,6 +161,10 @@ public interface LogLlamadasBHService {
     @POST
     @Path("/create_instance")
     ServiceResponse createinstance(@RequestBody com.keralty.ae.viewmodel.logllamadasbh.siu.CreateinstanceRequest request);
+
+    @POST
+    @Path("/create_instance")
+    CompletionStage<ServiceResponse> createinstanceAsync(@RequestBody com.keralty.ae.viewmodel.logllamadasbh.siu.CreateinstanceRequest request);
 
     /*
      * Implements service deleteinstance

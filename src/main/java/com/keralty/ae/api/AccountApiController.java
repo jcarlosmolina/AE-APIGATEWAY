@@ -21,6 +21,8 @@ import com.keralty.ae.utils.TokenUtilities;
 import com.keralty.ae.viewmodel.LoginRequest;
 import com.keralty.ae.viewmodel.UserInfoViewModel;
 
+import io.quarkus.security.UnauthorizedException;
+
 @Path("/")
 @RequestScoped
 public class AccountApiController {
@@ -39,10 +41,21 @@ public class AccountApiController {
     @Path("/Token")
     @Produces(MediaType.TEXT_PLAIN)
     public RestResponse<String> login(LoginRequest loginRequest) {
-        String token = authenticationService.login(loginRequest);
+        String token = null;
+        try {
+        	token = authenticationService.login(loginRequest);
+        } catch(Exception e) {
+        	throw new UnauthorizedException();
+        }
         return ResponseBuilder.ok(token, MediaType.TEXT_PLAIN_TYPE).build();
     }
 
+    @POST
+    @Path("/TokenAzure")
+    public UserInfoViewModel loginAzure(LoginRequest loginRequest) {
+    	return authenticationService.loginAzure(loginRequest);
+    }
+    
     @POST
     @Path("/api/Account/Logout")
     @RolesAllowed({"Funcionario","Admin","SuperAdmin","Asesor","AreaMedica","Afiliaciones","RespRegional","Gestor","MesaDeApoyo","UsuarioSistemaExterno"})

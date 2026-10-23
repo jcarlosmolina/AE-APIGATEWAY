@@ -27,6 +27,9 @@ import jakarta.ws.rs.POST;
 import org.eclipse.microprofile.rest.client.annotation.ClientHeaderParam;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
+import com.keralty.integraciones.contractresponse.request.ContractResponseRequest;
+import com.keralty.integraciones.contractresponse.response.ContractResponseResponse;
+
 @Path("/api/GlobalServicesApi")
 @RegisterRestClient(configKey="ae-generasolicitud")
 @ClientHeaderParam(name = "Authorization", value = "Bearer {com.keralty.ae.utils.TokenUtilities.getToken4aegenerasolicitud}")
@@ -93,11 +96,11 @@ public interface GlobalServicesProxy4aegenerasolicitud {
 
     @POST
     @Path(value = "/TGRPTACTRNEW")
-    public TGRPTACTRNEWResponse tGRPTACTRNEW(TGRPTACTRNEWRequest request);
+    public ContractResponseResponse tGRPTACTRNEW(ContractResponseRequest request);
 
 
     @POST
     @Path(value = "/TGRPTACTRINC")
-    public TGRPTACTRINCResponse tGRPTACTRINC(TGRPTACTRINCRequest request);
+    public ContractResponseResponse tGRPTACTRINC(ContractResponseRequest request);
 
 }

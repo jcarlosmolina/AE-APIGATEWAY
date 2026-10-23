@@ -19,6 +19,10 @@ public interface TokenAuthenticationService {
     public String login(LoginRequest loginRequest);
 
     @POST
+    @Path("/TokenAzure")
+    public UserInfoViewModel loginAzure(LoginRequest loginRequest);
+
+    @POST
     @Path("/api/Account/Logout")
     @ClientHeaderParam(name = "Authorization", value = "Bearer {com.keralty.ae.utils.TokenUtilities.getToken4aeusuarios}")
     public void logout(User user);

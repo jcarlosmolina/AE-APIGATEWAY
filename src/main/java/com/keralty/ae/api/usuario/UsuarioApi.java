@@ -2,6 +2,7 @@ package com.keralty.ae.api.usuario;
 
 import com.keralty.ae.persistence.oid.UsuarioOid;
 import com.keralty.ae.persistence.Usuario;
+import com.keralty.ae.service.MsEstatusProxy;
 import com.keralty.ae.service.UsuarioService;
 import com.keralty.ae.utils.TokenUtilities;
 import com.keralty.ae.viewmodel.InstanceResponseViewModel;
@@ -33,6 +34,9 @@ public class UsuarioApi {
 
     @RestClient
     UsuarioService service;
+
+    @RestClient
+    MsEstatusProxy serviceMsEstatus;
 
     JsonWebToken jwt; 
 
@@ -77,6 +81,9 @@ public class UsuarioApi {
     @Path(value = "/GetUsuarioDynamic")
     @RolesAllowed({"Funcionario","Admin","SuperAdmin","Asesor","AreaMedica","Afiliaciones","RespRegional","Gestor","MesaDeApoyo"})
     public InstanceResponseViewModel getUsuarioDynamic(QueryRequest request) {
+    	if ("msestatus".equalsIgnoreCase(request.getPiuName()) ) {
+    		return serviceMsEstatus.getUsuarioDynamic(request);
+    	}    	
         return service.getUsuarioDynamic(request);
     }
 
@@ -91,6 +98,11 @@ public class UsuarioApi {
     @Path(value = "/GetPopulationDynamic")
     @RolesAllowed({"Funcionario","Admin","SuperAdmin","Asesor","AreaMedica","Afiliaciones","RespRegional","Gestor","MesaDeApoyo"})
     public PopulationResponseViewModel getUsuarioPopulationDynamic(QueryRequest request) {
+    	if ("msestatus".equalsIgnoreCase(request.getPiuName()) ||
+    		"piu_usuariodepiustatussol".equalsIgnoreCase(request.getPiuName()) ) {
+    		return serviceMsEstatus.getUsuarioPopulationDynamic(request);
+    	}
+    	
         return (PopulationResponseViewModel) service.getPopulationDynamic(request);
     }
 

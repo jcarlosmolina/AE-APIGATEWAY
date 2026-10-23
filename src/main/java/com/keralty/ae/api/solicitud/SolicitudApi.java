@@ -3,6 +3,8 @@ package com.keralty.ae.api.solicitud;
 import com.keralty.ae.persistence.oid.SolicitudOid;
 import com.keralty.ae.persistence.Solicitud;
 import com.keralty.ae.service.SolicitudService;
+import com.keralty.ae.service.MsEnvioDocProxy;
+import com.keralty.ae.service.MsEstatusProxy;
 import com.keralty.ae.utils.TokenUtilities;
 import com.keralty.ae.viewmodel.InstanceResponseViewModel;
 import com.keralty.ae.viewmodel.PopulationResponseViewModel;
@@ -87,6 +89,12 @@ public class SolicitudApi {
     @RestClient
     SolicitudService service;
 
+    @RestClient
+    MsEstatusProxy serviceMsEstatus;
+
+    @RestClient
+    MsEnvioDocProxy serviceMsEnvioDoc;
+
     JsonWebToken jwt; 
 
     public SolicitudApi(JsonWebToken jwt) {
@@ -130,7 +138,13 @@ public class SolicitudApi {
     @Path(value = "/GetSolicitudDynamic")
     @RolesAllowed({"Funcionario","Admin","SuperAdmin","Asesor","AreaMedica","Afiliaciones","RespRegional","Gestor","MesaDeApoyo","UsuarioSistemaExterno"})
     public InstanceResponseViewModel getSolicitudDynamic(QueryRequest request) {
-        return service.getSolicitudDynamic(request);
+    	if ("msestatus".equalsIgnoreCase(request.getPiuName()) ) {
+    		return serviceMsEstatus.getSolicitudDynamic(request);
+    	}    	
+    	if ("msenviodoc".equalsIgnoreCase(request.getPiuName()) ) {
+    		return serviceMsEnvioDoc.getSolicitudDynamic(request);
+    	}
+    	return service.getSolicitudDynamic(request);
     }
 
     @POST
@@ -144,6 +158,23 @@ public class SolicitudApi {
     @Path(value = "/GetPopulationDynamic")
     @RolesAllowed({"Funcionario","Admin","SuperAdmin","Asesor","AreaMedica","Afiliaciones","RespRegional","Gestor","MesaDeApoyo","UsuarioSistemaExterno"})
     public PopulationResponseViewModel getSolicitudPopulationDynamic(QueryRequest request) {
+    	
+    	if ("msestatus".equalsIgnoreCase(request.getPiuName()) ||
+    		"piu_estatussolicitudesadmin".equalsIgnoreCase(request.getPiuName()) ||
+    		"piu_estatussolicitudes_afil".equalsIgnoreCase(request.getPiuName()) ||
+    		"piu_estatussolicitudes_areamed".equalsIgnoreCase(request.getPiuName()) ||
+    		"piu_estatussolicitudes_asesor".equalsIgnoreCase(request.getPiuName()) ||
+    		"piu_estatussol_gestormesa".equalsIgnoreCase(request.getPiuName()) ||
+    		"iiu_solicitudestatus_vermas".equalsIgnoreCase(request.getPiuName()) ) {
+    		return serviceMsEstatus.getSolicitudPopulationDynamic(request);
+    	}
+
+    	if ("msenviodoc".equalsIgnoreCase(request.getPiuName()) ||
+    			"iiu_diferenciasliquidacion".equalsIgnoreCase(request.getPiuName()) ||
+        		"PIU_EnvioDoc".equalsIgnoreCase(request.getPiuName())) {
+        		return serviceMsEnvioDoc.getSolicitudPopulationDynamic(request);
+        	}
+    	
         return (PopulationResponseViewModel) service.getPopulationDynamic(request);
     }
 
@@ -191,7 +222,7 @@ public class SolicitudApi {
     @Path(value = "/dummy_Preexistencias")
     @RolesAllowed({"Admin","SuperAdmin","Asesor","AreaMedica","Afiliaciones","Gestor","MesaDeApoyo"})
     public ServiceResponse solicitudDummyPreexistencias(DummyPreexistenciasRequest request) {
-        return service.dummyPreexistencias(request);
+        return serviceMsEnvioDoc.solicituddummyPreexistencias(request);
     }
     
 
@@ -200,14 +231,14 @@ public class SolicitudApi {
     @RolesAllowed({"Admin","SuperAdmin","Asesor","AreaMedica","Afiliaciones","Gestor","MesaDeApoyo"})
     public ServiceResponse solicitudDummyPreexistenciasCheckPreconditions(DummyPreexistenciasRequest request) {
 
-        return service.dummyPreexistenciasCheckPreconditions(request);
+        return serviceMsEnvioDoc.solicituddummyPreexistenciasCheckPreconditions(request);
     }
 
     @POST
     @Path(value = "/dummy_DiferenciasLiq")
     @RolesAllowed({"Admin","SuperAdmin","Asesor","AreaMedica","Afiliaciones","Gestor","MesaDeApoyo"})
     public ServiceResponse solicitudDummyDiferenciasLiq(DummyDiferenciasLiqRequest request) {
-        return service.dummyDiferenciasLiq(request);
+        return serviceMsEnvioDoc.solicituddummyDiferenciasLiq(request);
     }
     
 
@@ -216,7 +247,7 @@ public class SolicitudApi {
     @RolesAllowed({"Admin","SuperAdmin","Asesor","AreaMedica","Afiliaciones","Gestor","MesaDeApoyo"})
     public ServiceResponse solicitudDummyDiferenciasLiqCheckPreconditions(DummyDiferenciasLiqRequest request) {
 
-        return service.dummyDiferenciasLiqCheckPreconditions(request);
+        return serviceMsEnvioDoc.solicituddummyDiferenciasLiqCheckPreconditions(request);
     }
 
     @POST
@@ -415,7 +446,7 @@ public class SolicitudApi {
     @Path(value = "/TENVIARDOC")
     @RolesAllowed({"Admin","SuperAdmin","Asesor","AreaMedica","Afiliaciones","Gestor","MesaDeApoyo"})
     public TENVIARDOCResponse solicitudTENVIARDOC(TENVIARDOCRequest request) {
-        return service.tENVIARDOC(request);
+        return serviceMsEnvioDoc.solicitudTENVIARDOC(request);
     }
     
 
@@ -519,23 +550,22 @@ public class SolicitudApi {
     @Path(value = "/TCAMBIARESTADOERROR")
     @RolesAllowed({"Admin","SuperAdmin","AreaMedica","MesaDeApoyo"})
     public ServiceResponse solicitudTCAMBIARESTADOERROR(TCAMBIARESTADOERRORRequest request) {
-        return service.tCAMBIARESTADOERROR(request);
+        return serviceMsEstatus.solicitudTCAMBIARESTADOERROR(request);
     }
-    
 
     @POST
     @Path(value = "/TCAMBIARESTADOERRORCheckPreconditions")
     @RolesAllowed({"Admin","SuperAdmin","AreaMedica","MesaDeApoyo"})
     public ServiceResponse solicitudTCAMBIARESTADOERRORCheckPreconditions(TCAMBIARESTADOERRORRequest request) {
 
-        return service.tCAMBIARESTADOERRORCheckPreconditions(request);
+        return serviceMsEstatus.solicitudTCAMBIARESTADOERRORCheckPreconditions(request);
     }
 
     @POST
     @Path(value = "/TCAMBIARESTDEVAREAMED")
     @RolesAllowed({"Admin","SuperAdmin","AreaMedica","Afiliaciones","MesaDeApoyo"})
     public TCAMBIARESTDEVAREAMEDResponse solicitudTCAMBIARESTDEVAREAMED(TCAMBIARESTDEVAREAMEDRequest request) {
-        return service.tCAMBIARESTDEVAREAMED(request);
+        return serviceMsEstatus.solicitudTCAMBIARESTDEVAREAMED(request);
     }
     
 
@@ -544,14 +574,14 @@ public class SolicitudApi {
     @RolesAllowed({"Admin","SuperAdmin","AreaMedica","Afiliaciones","MesaDeApoyo"})
     public TCAMBIARESTDEVAREAMEDResponse solicitudTCAMBIARESTDEVAREAMEDCheckPreconditions(TCAMBIARESTDEVAREAMEDRequest request) {
 
-        return service.tCAMBIARESTDEVAREAMEDCheckPreconditions(request);
+        return serviceMsEstatus.solicitudTCAMBIARESTDEVAREAMEDCheckPreconditions(request);
     }
 
     @POST
     @Path(value = "/TCAMBIARESTPENDMEDICO")
     @RolesAllowed({"Admin","SuperAdmin","AreaMedica","Afiliaciones","MesaDeApoyo"})
     public ServiceResponse solicitudTCAMBIARESTPENDMEDICO(TCAMBIARESTPENDMEDICORequest request) {
-        return service.tCAMBIARESTPENDMEDICO(request);
+        return serviceMsEstatus.solicitudTCAMBIARESTPENDMEDICO(request);
     }
     
 
@@ -560,7 +590,7 @@ public class SolicitudApi {
     @RolesAllowed({"Admin","SuperAdmin","AreaMedica","Afiliaciones","MesaDeApoyo"})
     public ServiceResponse solicitudTCAMBIARESTPENDMEDICOCheckPreconditions(TCAMBIARESTPENDMEDICORequest request) {
 
-        return service.tCAMBIARESTPENDMEDICOCheckPreconditions(request);
+        return serviceMsEstatus.solicitudTCAMBIARESTPENDMEDICOCheckPreconditions(request);
     }
 
     @POST
@@ -583,7 +613,7 @@ public class SolicitudApi {
     @Path(value = "/TCAMBIARESTANULADO")
     @RolesAllowed({"Admin","SuperAdmin","Afiliaciones","MesaDeApoyo"})
     public ServiceResponse solicitudTCAMBIARESTANULADO(TCAMBIARESTANULADORequest request) {
-        return service.tCAMBIARESTANULADO(request);
+        return serviceMsEstatus.solicitudTCAMBIARESTANULADO(request);
     }
     
 
@@ -592,7 +622,7 @@ public class SolicitudApi {
     @RolesAllowed({"Admin","SuperAdmin","Afiliaciones","MesaDeApoyo"})
     public ServiceResponse solicitudTCAMBIARESTANULADOCheckPreconditions(TCAMBIARESTANULADORequest request) {
 
-        return service.tCAMBIARESTANULADOCheckPreconditions(request);
+        return serviceMsEstatus.solicitudTCAMBIARESTANULADOCheckPreconditions(request);
     }
 
     @POST
@@ -655,7 +685,7 @@ public class SolicitudApi {
     @Path(value = "/TCAMBIARESTAPROBMEDICO")
     @RolesAllowed({"Admin","SuperAdmin","AreaMedica"})
     public ServiceResponse solicitudTCAMBIARESTAPROBMEDICO(TCAMBIARESTAPROBMEDICORequest request) {
-        return service.tCAMBIARESTAPROBMEDICO(request);
+        return serviceMsEstatus.solicitudTCAMBIARESTAPROBMEDICO(request);
     }
     
 
@@ -664,14 +694,14 @@ public class SolicitudApi {
     @RolesAllowed({"Admin","SuperAdmin","AreaMedica"})
     public ServiceResponse solicitudTCAMBIARESTAPROBMEDICOCheckPreconditions(TCAMBIARESTAPROBMEDICORequest request) {
 
-        return service.tCAMBIARESTAPROBMEDICOCheckPreconditions(request);
+        return serviceMsEstatus.solicitudTCAMBIARESTAPROBMEDICOCheckPreconditions(request);
     }
 
     @POST
     @Path(value = "/TCAMBIARESTADOADMIN")
     @RolesAllowed({"Admin","SuperAdmin","MesaDeApoyo"})
     public ServiceResponse solicitudTCAMBIARESTADOADMIN(TCAMBIARESTADOADMINRequest request) {
-        return service.tCAMBIARESTADOADMIN(request);
+    	return serviceMsEstatus.solicitudTCAMBIARESTADOADMIN(request);
     }
     
 
@@ -719,7 +749,7 @@ public class SolicitudApi {
     @Path(value = "/TREASIGNARUSUARIOS")
     @RolesAllowed({"Admin","SuperAdmin"})
     public TREASIGNARUSUARIOSResponse solicitudTREASIGNARUSUARIOS(TREASIGNARUSUARIOSRequest request) {
-        return service.tREASIGNARUSUARIOS(request);
+    	return serviceMsEstatus.solicitudTREASIGNARUSUARIOS(request);
     }
     
 

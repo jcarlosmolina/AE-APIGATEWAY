@@ -2,6 +2,7 @@ package com.keralty.ae.api.preexistencia;
 
 import com.keralty.ae.persistence.oid.PreexistenciaOid;
 import com.keralty.ae.persistence.Preexistencia;
+import com.keralty.ae.service.MsEnvioDocProxy;
 import com.keralty.ae.service.PreexistenciaService;
 import com.keralty.ae.utils.TokenUtilities;
 import com.keralty.ae.viewmodel.InstanceResponseViewModel;
@@ -24,6 +25,9 @@ public class PreexistenciaApi {
     @RestClient
     PreexistenciaService service;
 
+    @RestClient
+    MsEnvioDocProxy serviceMsEnvioDoc;
+    
     JsonWebToken jwt; 
 
     public PreexistenciaApi(JsonWebToken jwt) {
@@ -67,13 +71,20 @@ public class PreexistenciaApi {
     @Path(value = "/GetPreexistenciaDynamic")
     @RolesAllowed({"Admin","SuperAdmin","Asesor","AreaMedica","Afiliaciones","Gestor","MesaDeApoyo"})
     public InstanceResponseViewModel getPreexistenciaDynamic(QueryRequest request) {
-        return service.getPreexistenciaDynamic(request);
+    	if ("mseenviodoc".equalsIgnoreCase(request.getPiuName()) ) {
+    		return serviceMsEnvioDoc.getPreexistenciaDynamic(request);
+    	}
+    	return service.getPreexistenciaDynamic(request);
     }
     
     @POST
     @Path(value = "/GetPopulationDynamic")
     @RolesAllowed({"Admin","SuperAdmin","Asesor","AreaMedica","Afiliaciones","Gestor","MesaDeApoyo"})
     public PopulationResponseViewModel getPreexistenciaPopulationDynamic(QueryRequest request) {
+    	if ("msenviodoc".equalsIgnoreCase(request.getPiuName()) ||
+        		"PIU_Preexistencia".equalsIgnoreCase(request.getPiuName())) {
+        		return serviceMsEnvioDoc.preexistenciagetPopulationDynamic(request);
+        }    	
         return (PopulationResponseViewModel) service.getPopulationDynamic(request);
     }
 
