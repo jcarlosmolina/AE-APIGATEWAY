@@ -34,7 +34,6 @@ import com.keralty.ae.viewmodel.globalservices.siu.REACTIVACIONCONTRATOSRequest;
 import com.keralty.ae.viewmodel.globalservices.siu.TCREARAGENTERequest;
 import com.keralty.ae.viewmodel.globalservices.siu.TDELCOMBORequest;
 import com.keralty.ae.viewmodel.globalservices.siu.TdelcontsindocsolRequest;
-import com.keralty.ae.viewmodel.globalservices.siu.TGACTDIRECCIONESRequest;
 import com.keralty.ae.viewmodel.globalservices.siu.TGACTPERSONAENCORERequest;
 import com.keralty.ae.viewmodel.globalservices.siu.TGACTPERSONAENCOREResponse;
 import com.keralty.ae.viewmodel.globalservices.siu.TGACTTIPOFACTURARequest;
@@ -601,13 +600,6 @@ public class GlobalServicesApi {
     @RolesAllowed({"SuperAdmin"})
     public ServiceResponse oGANULARSOLAUX(OGANULARSOLAUXRequest request) {
         return proxy4aesolicitudes.oGANULARSOLAUX(request);
-    }
-
-    @POST
-    @Path(value = "/TGACTDIRECCIONES")
-    @RolesAllowed({"Funcionario","Admin","SuperAdmin","Asesor","AreaMedica","Afiliaciones","RespRegional","Gestor","MesaDeApoyo"})
-    public ServiceResponse tGACTDIRECCIONES(TGACTDIRECCIONESRequest request) {
-        return proxy4aegenerasolicitud.tGACTDIRECCIONES(request);
     }
 
     @POST

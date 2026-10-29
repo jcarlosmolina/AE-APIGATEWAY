@@ -31,11 +31,9 @@ import com.keralty.ae.service.PlanesService;
 import com.keralty.ae.service.PlantillaEmailService;
 import com.keralty.ae.service.PreguntaService;
 import com.keralty.ae.service.ProductosService;
-import com.keralty.ae.service.ProteccionDatosService;
 import com.keralty.ae.service.SolicitudService;
 import com.keralty.ae.service.UsuarioService;
 import com.keralty.ae.utils.TokenUtilities;
-import com.keralty.ae.viewmodel.userfunctions.FuActualizarPersonaCORERequest;
 import com.keralty.ae.viewmodel.userfunctions.FuAnadirTextoRequest;
 import com.keralty.ae.viewmodel.userfunctions.FuBuscarDocGestorNumIdRequest;
 import com.keralty.ae.viewmodel.userfunctions.FuBuscarDocGestorSolicitudRequest;
@@ -51,8 +49,6 @@ import com.keralty.ae.viewmodel.userfunctions.FuCheckRegimenSubsidiadoRequest;
 import com.keralty.ae.viewmodel.userfunctions.FuconcatenarConNulosRequest;
 import com.keralty.ae.viewmodel.userfunctions.FuContieneCharEspecialRequest;
 import com.keralty.ae.viewmodel.userfunctions.FuContratoExentoDocSolRequest;
-import com.keralty.ae.viewmodel.userfunctions.FuCrearPersonaCORERequest;
-import com.keralty.ae.viewmodel.userfunctions.FuCrearZipDocumentacionAutoRequest;
 import com.keralty.ae.viewmodel.userfunctions.FuEnviarEmailDevDocRequest;
 import com.keralty.ae.viewmodel.userfunctions.FuEnviarEmailRequest;
 import com.keralty.ae.viewmodel.userfunctions.FuEnviarSMSRequest;
@@ -141,9 +137,6 @@ public class UserFunctionsApi {
 
     @RestClient
     PersonaService personaSrv;
-
-    @RestClient
-    ProteccionDatosService proteccionDatosSrv;
 
     @RestClient
     PersonaCService personaCSrv;
@@ -441,32 +434,6 @@ public class UserFunctionsApi {
     public String fugetListaErrores(FugetListaErroresRequest request) {
         request.setPfSolicitudInstance(solicitudSrv.getByOIDWithHV(request.getPfSolicitud()));
         return service.fugetListaErroresFun(request);
-    }
-
-    @POST
-    @Path(value = "/fu_CrearPersonaCORE")
-    @Produces(MediaType.TEXT_PLAIN)
-    public String fuCrearPersonaCORE(FuCrearPersonaCORERequest request) {
-        request.setPfPersonaInstance(personaSrv.getByOIDWithHV(request.getPfPersona()));
-        request.setPfProtDatosInstance(proteccionDatosSrv.getByOIDWithHV(request.getPfProtDatos()));
-        return service.fuCrearPersonaCOREFun(request);
-    }
-
-    @POST
-    @Path(value = "/fu_ActualizarPersonaCORE")
-    @Produces(MediaType.TEXT_PLAIN)
-    public String fuActualizarPersonaCORE(FuActualizarPersonaCORERequest request) {
-        request.setPfPersonaInstance(personaSrv.getByOIDWithHV(request.getPfPersona()));
-        request.setPfProtDatosInstance(proteccionDatosSrv.getByOIDWithHV(request.getPfProtDatos()));
-        return service.fuActualizarPersonaCOREFun(request);
-    }
-
-    @POST
-    @Path(value = "/fuCrearZipDocumentacionAuto")
-    @Produces(MediaType.TEXT_PLAIN)
-    public String fuCrearZipDocumentacionAuto(FuCrearZipDocumentacionAutoRequest request) {
-        request.setPsSolicitudInstance(solicitudSrv.getByOIDWithHV(request.getPsSolicitud()));
-        return service.fuCrearZipDocumentacionAutoFun(request);
     }
 
     @POST

@@ -68,7 +68,7 @@ public class AccountApiController {
     @Path("/api/Account/UserInfo")
     @RolesAllowed({"Funcionario","Admin","SuperAdmin","Asesor","AreaMedica","Afiliaciones","RespRegional","Gestor","MesaDeApoyo","UsuarioSistemaExterno"})
     public UserInfoViewModel getUserInfo(@Context SecurityContext sec) {
-    	if (sec != null) {
+    	if (sec == null) {
     		throw new UnauthorizedException();
     	}
     	return authenticationService.getUserInfo();

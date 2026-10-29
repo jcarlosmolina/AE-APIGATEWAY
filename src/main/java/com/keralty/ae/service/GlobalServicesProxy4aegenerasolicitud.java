@@ -2,7 +2,6 @@ package com.keralty.ae.service;
 
 import com.keralty.ae.viewmodel.globalservices.siu.OGENERARSOLICITUD2Request;
 import com.keralty.ae.viewmodel.globalservices.siu.OGENERARSOLICITUD2Response;
-import com.keralty.ae.viewmodel.globalservices.siu.TGACTDIRECCIONESRequest;
 import com.keralty.ae.viewmodel.globalservices.siu.TGACTPERSONAENCORERequest;
 import com.keralty.ae.viewmodel.globalservices.siu.TGACTPERSONAENCOREResponse;
 import com.keralty.ae.viewmodel.globalservices.siu.TGACTTIPOFACTURARequest;
@@ -57,11 +56,6 @@ public interface GlobalServicesProxy4aegenerasolicitud {
     @POST
     @Path(value = "/TGCREARPERSONACORE")
     public TGCREARPERSONACOREResponse tGCREARPERSONACORE(TGCREARPERSONACORERequest request);
-
-
-    @POST
-    @Path(value = "/TGACTDIRECCIONES")
-    public ServiceResponse tGACTDIRECCIONES(TGACTDIRECCIONESRequest request);
 
 
     @POST
