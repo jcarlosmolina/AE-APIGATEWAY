@@ -3,6 +3,7 @@ package com.keralty.ae.api.logasignaciones;
 import com.keralty.ae.persistence.LogAsignaciones;
 import com.keralty.ae.persistence.oid.LogAsignacionesOid;
 import com.keralty.ae.service.LogAsignacionesService;
+import com.keralty.ae.service.MsEstatusProxy;
 import com.keralty.ae.utils.TokenUtilities;
 import com.keralty.ae.viewmodel.InstanceResponseViewModel;
 import com.keralty.ae.viewmodel.PopulationResponseViewModel;
@@ -23,6 +24,9 @@ public class LogAsignacionesApi {
 
     @RestClient
     LogAsignacionesService service;
+
+    @RestClient
+    MsEstatusProxy serviceMsEstatus;
 
     JsonWebToken jwt; 
 
@@ -74,6 +78,10 @@ public class LogAsignacionesApi {
     @Path(value = "/GetPopulationDynamic")
     @RolesAllowed({"Admin","SuperAdmin","MesaDeApoyo"})
     public PopulationResponseViewModel getLogAsignacionesPopulationDynamic(QueryRequest request) {
+    	if ("msestatus".equalsIgnoreCase(request.getPiuName()) ||
+        		"piu_logasignaciones".equalsIgnoreCase(request.getPiuName()) ) {
+        		return serviceMsEstatus.getLogAsignacionesPopulationDynamic(request);
+        	}
         return (PopulationResponseViewModel) service.getPopulationDynamic(request);
     }
 

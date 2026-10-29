@@ -16,6 +16,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.POST;
 import java.util.List;
+import java.util.concurrent.CompletionStage;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -87,6 +88,12 @@ public class LogLlamadasBHApi {
         return service.createinstance(request);
     }
     
+
+    @POST
+    @Path(value = "/create_instanceAsync")
+    public CompletionStage<ServiceResponse> logLlamadasBHCreateinstanceAsync(CreateinstanceRequest request) {
+        return service.createinstanceAsync(request);
+    }
 
     @POST
     @Path(value = "/delete_instance")

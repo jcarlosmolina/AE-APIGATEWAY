@@ -21,6 +21,8 @@ import com.keralty.ae.utils.TokenUtilities;
 import com.keralty.ae.viewmodel.LoginRequest;
 import com.keralty.ae.viewmodel.UserInfoViewModel;
 
+import io.quarkus.security.UnauthorizedException;
+
 @Path("/")
 @RequestScoped
 public class AccountApiController {
@@ -39,29 +41,22 @@ public class AccountApiController {
     @Path("/Token")
     @Produces(MediaType.TEXT_PLAIN)
     public RestResponse<String> login(LoginRequest loginRequest) {
-<<<<<<< HEAD
         String token = null;
         try {
         	token = authenticationService.login(loginRequest);
         } catch(Exception e) {
         	throw new UnauthorizedException();
         }
-=======
-        String token = authenticationService.login(loginRequest);
->>>>>>> bff98d212552a1340e09015d8e8df45a74c8c021
         return ResponseBuilder.ok(token, MediaType.TEXT_PLAIN_TYPE).build();
     }
 
     @POST
-<<<<<<< HEAD
     @Path("/TokenAzure")
     public UserInfoViewModel loginAzure(LoginRequest loginRequest) {
     	return authenticationService.loginAzure(loginRequest);
     }
     
     @POST
-=======
->>>>>>> bff98d212552a1340e09015d8e8df45a74c8c021
     @Path("/api/Account/Logout")
     @RolesAllowed({"Funcionario","Admin","SuperAdmin","Asesor","AreaMedica","Afiliaciones","RespRegional","Gestor","MesaDeApoyo","UsuarioSistemaExterno"})
     public boolean logout(User user) {
@@ -73,6 +68,9 @@ public class AccountApiController {
     @Path("/api/Account/UserInfo")
     @RolesAllowed({"Funcionario","Admin","SuperAdmin","Asesor","AreaMedica","Afiliaciones","RespRegional","Gestor","MesaDeApoyo","UsuarioSistemaExterno"})
     public UserInfoViewModel getUserInfo(@Context SecurityContext sec) {
+    	if (sec != null) {
+    		throw new UnauthorizedException();
+    	}
     	return authenticationService.getUserInfo();
     }
     

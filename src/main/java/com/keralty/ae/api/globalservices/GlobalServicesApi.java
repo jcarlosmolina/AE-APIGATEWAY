@@ -119,9 +119,25 @@ import com.keralty.ae.service.GlobalServicesProxy4aereportes;
 import com.keralty.ae.service.GlobalServicesProxy4aegenerasolicitud;
 import com.keralty.ae.service.GlobalServicesProxy4aenovedades;
 
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.keralty.ae.exception.SystemException;
+import com.keralty.ae.persistence.oid.SolicitudNovedadOid;
+import com.keralty.ae.persistence.oid.SolicitudOid;
+
 @Path("/api/GlobalServicesApi")
 @RequestScoped
 public class GlobalServicesApi {
+
+	@ConfigProperty(name="com.keralty.reportes.querystring.key", defaultValue = "plenyuirnc6simc9emcs" )
+    private String cipherKey = "plenyuirnc6simc9emcs";
 
 
     @RestClient
@@ -753,15 +769,36 @@ public class GlobalServicesApi {
     @POST
     @Path(value = "/OGETREPORTSOL")
     @RolesAllowed({"Funcionario","Admin","SuperAdmin","Asesor","AreaMedica","Afiliaciones","RespRegional","Gestor","MesaDeApoyo"})
-    public OGETREPORTSOLResponse oGETREPORTSOL(OGETREPORTSOLRequest request) {
-        return proxy4aereportes.oGETREPORTSOL(request);
+    public OGETREPORTSOLResponse oGETREPORTSOL(OGETREPORTSOLRequest request, @HeaderParam("Authorization") String authorization) {
+    	
+    	// Llamamos a la implementacion mas generica
+		OGETREPORTEResponse responseGetReporte = processOGETREPORTE(request.getOGETREPORTSOLptSolicitud().getAesolicitudesidsolicitud(), 0L, authorization);
+		
+		OGETREPORTSOLResponse response = new OGETREPORTSOLResponse();
+		response.setOGETREPORTSOLoaNombreArchivo(responseGetReporte.getOGETREPORTEoaNombreArchivo());
+		response.setOGETREPORTSOLoaArchivo(responseGetReporte.getOGETREPORTEoaArchivo());
+		response.setResultCode(responseGetReporte.getResultCode());
+		response.setResultDescription(responseGetReporte.getResultDescription());
+		return response; 
     }
 
     @POST
     @Path(value = "/OGETREPORTSOLNOV")
     @RolesAllowed({"Funcionario","Admin","SuperAdmin","Asesor","AreaMedica","Afiliaciones","RespRegional","Gestor","MesaDeApoyo"})
-    public OGETREPORTSOLNOVResponse oGETREPORTSOLNOV(OGETREPORTSOLNOVRequest request) {
-        return proxy4aereportes.oGETREPORTSOLNOV(request);
+    public OGETREPORTSOLNOVResponse oGETREPORTSOLNOV(OGETREPORTSOLNOVRequest request, @HeaderParam("Authorization") String authorization) {
+    	
+    	// Llamamos a la implementacion mas generica
+		OGETREPORTEResponse responseGetReporte = processOGETREPORTE(
+				request.getOGETREPORTSOLNOVptSolicitudNovedad().getSolicitudNovedadId(), 
+				12L, 
+				authorization);
+		
+		OGETREPORTSOLNOVResponse response = new OGETREPORTSOLNOVResponse();
+		response.setOGETREPORTSOLNOVoaNombreArchivo(responseGetReporte.getOGETREPORTEoaNombreArchivo());
+		response.setOGETREPORTSOLNOVoaArchivo(responseGetReporte.getOGETREPORTEoaArchivo());
+		response.setResultCode(responseGetReporte.getResultCode());
+		response.setResultDescription(responseGetReporte.getResultDescription());
+		return response; 
     }
 
     @POST
@@ -774,18 +811,175 @@ public class GlobalServicesApi {
     @POST
     @Path(value = "/OGETREPORTE")
     @RolesAllowed({"Funcionario","Admin","SuperAdmin","Asesor","AreaMedica","Afiliaciones","RespRegional","Gestor","MesaDeApoyo"})
-    public OGETREPORTEResponse oGETREPORTE(OGETREPORTERequest request) {
-        return proxy4aereportes.oGETREPORTE(request);
+    public OGETREPORTEResponse oGETREPORTE(OGETREPORTERequest request, @HeaderParam("Authorization") String authorization) {
+
+    	return processOGETREPORTE(
+    			request.getOGETREPORTEptSolicitud().getAesolicitudesidsolicitud(), 
+    			request.getOGETREPORTEptTipo(), 
+    			authorization);
+    }
+    
+    private OGETREPORTEResponse processOGETREPORTE(Long idSolicitud, Long tipo, String authorization) {
+
+    	// En lugar de generar el reporte, ponemos los datos necesarios en un string cifrado para que 
+    	//  lo reciba el Entry point auxiliar OGETREPORTE_PDF
+    	OGETREPORTEResponse response = new OGETREPORTEResponse();
+    	
+    	try {
+			// Ciframos todos los datos
+			String dataString = generarQueryStringParaReporte(
+					authorization, 
+					idSolicitud,
+					tipo);
+			
+			// Indicamos en el nomber del archivo que se debe llamar al EndPoint Get que devuelve PDF
+			response.setOGETREPORTEoaNombreArchivo("...GET...");
+			response.setOGETREPORTEoaArchivo(("?data=" + dataString).getBytes());
+    	
+		} catch (Exception e) {
+    		org.slf4j.LoggerFactory.getLogger(this.getClass().getName()).error("OGETREPORTE 010: " + e.getMessage());
+    		response.setResultCode("010");
+    		response.setResultDescription(SystemException.GENERIC_EXCEPTION_MESSAGE);
+		}
+    	
+    	return response;
     }
 
-    @POST
-    @Path(value = "/TGRPTACTRNEW")
-    @RolesAllowed({"Admin","SuperAdmin","UsuarioSistemaExterno"})
-    public TGRPTACTRNEWResponse tGRPTACTRNEW(TGRPTACTRNEWRequest request) {
-        return proxy4aegenerasolicitud.tGRPTACTRNEW(request);
+    private String generarQueryStringParaReporte(String authorization, Long idSolicitud, Long tipo) throws Exception {
+    	JsonObject dataJson = new JsonObject();
+    	
+    	// EL token de esta misma pl usuario
+    	dataJson.addProperty("token", authorization);
+    	
+    	// El id de la solicitud
+    	dataJson.addProperty("idsolicitud", idSolicitud);
+
+    	// El tipo de reprote
+    	dataJson.addProperty("tipo", tipo);
+    	
+    	// El timestamp para controlar la caducidad de la peticion
+    	dataJson.addProperty("time", System.currentTimeMillis() / 1000);
+
+    	// Lo pasamos a String y lo ciframos
+    	AesGcmCipher cipher = new AesGcmCipher(obtenerClaveCifradoAES256().getBytes());
+		
+		// Ciframos todos los datos
+		return cipher.encrypt(dataJson.toString());
+    }
+    
+    @GET
+    @Path(value = "/ShowReporte")
+    public Response ShowReporte(@QueryParam("data") String encryptedData) {
+    	
+    	// Entry point auxiliar del OGETREPORTE    	
+    	// Genera un reporte utilizando el servicio OGETREOPRTE extrayendo los argumentos del qeury string recibido
+    	// Debe ser un m�todo Get para que pueda ser abierto en una nueva ventana y todo lo necesario para la generacion
+    	//  del reporte dbee llegar en el parametro
+    	
+    	if (encryptedData == null || encryptedData.isEmpty()) {
+    		org.slf4j.LoggerFactory.getLogger(this.getClass().getName()).error("OGETREPORTE_PDF 005: No ha llegado Data");    		
+    		return getResponseError(null);	    		
+    	}
+    	
+		try {
+			AesGcmCipher cipher = new AesGcmCipher(obtenerClaveCifradoAES256().getBytes());
+			
+			// Descriframos los datos recibidos
+	    	String dataString = cipher.decrypt(encryptedData);
+	    	
+	    	// Pasamos a Json
+	    	JsonObject dataJson = new Gson().fromJson(dataString, JsonObject.class);
+	    	
+	    	// Extraemos los datos del Json
+	    	if (dataJson == null) {
+	    		org.slf4j.LoggerFactory.getLogger(this.getClass().getName()).error("OGETREPORTE_PDF 010: Data mal formado");    		
+	    		return getResponseError(null);	    		
+	    	}
+
+	    	// Marca de tiempo para controlar caducidad
+	    	JsonElement jsonElement = dataJson.get("time");
+	    	if (jsonElement == null) {
+	    		org.slf4j.LoggerFactory.getLogger(this.getClass().getName()).error("OGETREPORTE_PDF 020: Time no recibido");    		
+	    		return getResponseError(null);	    		
+	    	}
+	    	long time = jsonElement.getAsLong();
+	    	// Comprobamos caducidad de la peticion
+	    	if ( (System.currentTimeMillis() / 1000 - time) > 10) {
+	    		org.slf4j.LoggerFactory.getLogger(this.getClass().getName()).error("OGETREPORTE_PDF 025: Peticion caducada");    		
+	    		return getResponseError("El reporte ha caducado");	    		
+	    	}
+	    	
+	    	
+	    	// Token Bearer del usuario que solciita el inforrme
+	    	jsonElement = dataJson.get("token");
+	    	if (jsonElement == null) {
+	    		org.slf4j.LoggerFactory.getLogger(this.getClass().getName()).error("OGETREPORTE_PDF 030: Token no recibido");    		
+	    		return getResponseError(null);	    		
+	    	}
+	    	String token = jsonElement.getAsString();
+	    	if (token == null || token.isEmpty()) {
+	    		org.slf4j.LoggerFactory.getLogger(this.getClass().getName()).error("OGETREPORTE_PDF 035: Token sin valor");    		
+	    		return getResponseError(null);	    		
+	    	}
+	
+	    	jsonElement = dataJson.get("tipo");
+	    	if (jsonElement == null) {
+	    		org.slf4j.LoggerFactory.getLogger(this.getClass().getName()).error("OGETREPORTE_PDF 040: Tipo no recibido");    		
+	    		return getResponseError(null);	    		
+	    	}
+	    	long tipoReporte = jsonElement.getAsLong();
+	
+	    	jsonElement = dataJson.get("idsolicitud");
+	    	if (jsonElement == null) {
+	    		org.slf4j.LoggerFactory.getLogger(this.getClass().getName()).error("OGETREPORTE_PDF 050: Id Solicitud no recibido");    		
+	    		return getResponseError(null);	    		
+	    	}
+	    	Long idSolicitud = jsonElement.getAsLong();
+	    	
+	    	// En funcion del tipo de reporte llamamos a un servicio u otro
+	    	byte[] fichero = null;
+	    	String nombreArchivo = "";
+	    	if (tipoReporte == 12L) {
+		    	// Invocamos al servicio que genera el reporte
+	    		OGETREPORTSOLNOVRequest requestGetReporte = new OGETREPORTSOLNOVRequest();
+		    	SolicitudNovedadOid oidSolicitud = new SolicitudNovedadOid(idSolicitud);
+				requestGetReporte.setOGETREPORTSOLNOVptSolicitudNovedad(oidSolicitud );
+				OGETREPORTSOLNOVResponse response = proxy4aereportes.oGETREPORTSOLNOV2(token, requestGetReporte);
+				if (!response.isOk()) {
+					throw new Exception(response.getResultDescription());
+				}
+	    		fichero = response.getOGETREPORTSOLNOVoaArchivo();
+	    		nombreArchivo = response.getOGETREPORTSOLNOVoaNombreArchivo();
+	    		
+	    	} else {
+		    	// Invocamos al servicio que genera el reporte
+		    	OGETREPORTERequest requestGetReporte = new OGETREPORTERequest();
+		    	SolicitudOid oidSolicitud = new SolicitudOid(idSolicitud);
+				requestGetReporte.setOGETREPORTEptSolicitud(oidSolicitud );
+		    	requestGetReporte.setOGETREPORTEptTipo(tipoReporte);
+				OGETREPORTEResponse response = proxy4aereportes.oGETREPORTE2(token, requestGetReporte);
+				if (!response.isOk()) {
+					throw new Exception(response.getResultDescription());
+				}
+	    		fichero = response.getOGETREPORTEoaArchivo();
+	    		nombreArchivo = response.getOGETREPORTEoaNombreArchivo();
+	    	}
+	
+			
+			if (fichero != null) {
+				// Devolvemos el pdf del reporte indicando el nombre del archivo
+				//return generaPdfHtmlResponse(fichero, nombreArchivo);
+				return generaPdfResponse(fichero, nombreArchivo);
+			} else {
+	    		org.slf4j.LoggerFactory.getLogger(this.getClass().getName()).error("OGETREPORTE_PDF 100: Archivo no generado");
+	    		return getResponseError(null);	    		
+			}
+		} catch (Exception e) {
+    		org.slf4j.LoggerFactory.getLogger(this.getClass().getName()).error("OGETREPORTE_PDF 101: Error: " + e.getMessage());
+    		return getResponseError(null);	    		
+		}
     }
 
-<<<<<<< HEAD
 
     private Response generaPdfResponse(byte[] fichero, String nombreArchivo) {
 
@@ -795,14 +989,36 @@ public class GlobalServicesApi {
             "Content-Disposition",
             "inline; filename=\"" + nombreArchivo +"\""
         ).build();		
-=======
-    @POST
-    @Path(value = "/TGRPTACTRINC")
-    @RolesAllowed({"Admin","SuperAdmin","UsuarioSistemaExterno"})
-    public TGRPTACTRINCResponse tGRPTACTRINC(TGRPTACTRINCRequest request) {
-        return proxy4aegenerasolicitud.tGRPTACTRINC(request);
->>>>>>> bff98d212552a1340e09015d8e8df45a74c8c021
     }
+
+    /**
+     * Devuelve una clave de 32 bytes a partir de la indicada
+     * @return 
+     */
+    private String obtenerClaveCifradoAES256() {
+    	String clave = cipherKey;
+    	
+    	while (clave.length() < 32) {
+    		clave += clave;
+    	}
+    	
+    	return clave.substring(0, 32);
+    }
+
+    /*
+     * Devuelve una Response con el texto del error indicado. Si no se indica ninguno se devuelve el texto de error generico
+     */
+    private static Response getResponseError(String msgError) {
+    	if (msgError == null || msgError.isEmpty()) {
+    		msgError = SystemException.GENERIC_EXCEPTION_MESSAGE;
+    	}
+    	return Response.ok(msgError)
+                .type("text/plain; charset=UTF-8")
+                .header("Content-Disposition","inline;")
+                .build();
+    }
+
+
 
     @POST
     @Path(value = "/OGSINCRONIZARPARAMETRICAS")

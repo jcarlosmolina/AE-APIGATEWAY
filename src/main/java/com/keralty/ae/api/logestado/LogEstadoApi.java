@@ -3,6 +3,7 @@ package com.keralty.ae.api.logestado;
 import com.keralty.ae.persistence.LogEstado;
 import com.keralty.ae.persistence.oid.LogEstadoOid;
 import com.keralty.ae.service.LogEstadoService;
+import com.keralty.ae.service.MsEstatusProxy;
 import com.keralty.ae.utils.TokenUtilities;
 import com.keralty.ae.viewmodel.InstanceResponseViewModel;
 import com.keralty.ae.viewmodel.PopulationResponseViewModel;
@@ -23,6 +24,9 @@ public class LogEstadoApi {
 
     @RestClient
     LogEstadoService service;
+
+    @RestClient
+    MsEstatusProxy serviceMsEstatus;
 
     JsonWebToken jwt; 
 
@@ -74,6 +78,10 @@ public class LogEstadoApi {
     @Path(value = "/GetPopulationDynamic")
     @RolesAllowed({"Admin","SuperAdmin","Asesor","AreaMedica","Afiliaciones","Gestor","MesaDeApoyo"})
     public PopulationResponseViewModel getLogEstadoPopulationDynamic(QueryRequest request) {
+    	if ("msestatus".equalsIgnoreCase(request.getPiuName()) ||
+        		"piu_logestado".equalsIgnoreCase(request.getPiuName()) ) {
+        		return serviceMsEstatus.getLogEstadoPopulationDynamic(request);
+        	}
         return (PopulationResponseViewModel) service.getPopulationDynamic(request);
     }
 
